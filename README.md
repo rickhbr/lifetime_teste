@@ -27,6 +27,13 @@ dart run build_runner build --delete-conflicting-outputs
 flutter run
 ```
 
+### Credenciais de teste
+
+| Campo | Valor |
+|---|---|
+| E-mail | `teste@teste.com` |
+| Senha | `123456` |
+
 ## Decisões técnicas
 
 ### Arquitetura
