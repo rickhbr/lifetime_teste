@@ -1,6 +1,6 @@
 # FX Câmbio
 
-Aplicativo Flutter que consome a API pública PTAX do Banco Central do Brasil para exibir cotações de moedas estrangeiras em relação ao Real.
+Desafio técnico Flutter desenvolvido para a **Lifetime**. Aplicativo que consome a API pública PTAX do Banco Central do Brasil para exibir cotações de moedas estrangeiras em relação ao Real.
 
 ## Como executar
 
