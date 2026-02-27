@@ -1,0 +1,76 @@
+name: ptax_app
+description: "FX Câmbio - Cotações do Banco Central do Brasil"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # State Management
+  flutter_bloc: ^9.1.0
+  equatable: ^2.0.7
+
+  # Firebase
+  firebase_core: ^3.13.0
+  firebase_auth: ^5.5.2
+
+  # DI
+  get_it: ^8.0.3
+  injectable: ^2.5.0
+
+  # HTTP
+  dio: ^5.8.0+1
+
+  # Navigation
+  go_router: ^15.1.2
+
+  # Serialization
+  json_annotation: ^4.9.0
+
+  # Utils
+  intl: ^0.20.2
+
+  # UI Polish
+  shimmer: ^3.0.0
+  flutter_animate: ^4.5.2
+  url_launcher: ^6.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # Code generation
+  build_runner: ^2.4.15
+  injectable_generator: ^2.7.0
+  json_serializable: ^6.9.5
+
+  # App icon & splash
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.6
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#0A0E17"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
+
+flutter_native_splash:
+  color: "#0A0E17"
+  image: "assets/images/splash_logo.png"
+  android_12:
+    color: "#0A0E17"
+    image: "assets/images/splash_logo.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
