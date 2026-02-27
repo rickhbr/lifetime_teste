@@ -7,19 +7,23 @@ Aplicativo Flutter que consome a API pública PTAX do Banco Central do Brasil pa
 ### Pré-requisitos
 
 - Flutter SDK >= 3.10.4
-- Projeto Firebase configurado com Authentication (Email/Password) habilitado
-- Arquivos `google-services.json` (Android) e `GoogleService-Info.plist` (iOS) nos diretórios correspondentes
+
+> O projeto já inclui as configurações do Firebase (Authentication com Email/Password). Basta clonar e rodar.
 
 ### Passos
 
 ```bash
-# 1. Instalar dependências
+# 1. Clonar o repositório
+git clone https://github.com/rickhbr/lifetime_teste.git
+cd lifetime_teste
+
+# 2. Instalar dependências
 flutter pub get
 
-# 2. Gerar código (modelos JSON + injeção de dependência)
+# 3. Gerar código (modelos JSON + injeção de dependência)
 dart run build_runner build --delete-conflicting-outputs
 
-# 3. Executar
+# 4. Executar
 flutter run
 ```
 
