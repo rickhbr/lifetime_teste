@@ -83,28 +83,28 @@ class _CurrenciesView extends StatelessWidget {
                             itemCount: filteredCurrencies.length,
                             itemBuilder: (context, index) {
                               final currency = filteredCurrencies[index];
-                              return CurrencyListTile(
+                              final tile = CurrencyListTile(
                                 currency: currency,
                                 index: index,
                                 onTap: () => context.push(
                                   '${RouteNames.currencies}/${currency.symbol}',
                                   extra: currency.name,
                                 ),
-                              )
+                              );
+                              if (index > 12) return tile;
+                              return tile
                                   .animate()
                                   .fadeIn(
                                     duration: 300.ms,
                                     delay: Duration(
-                                        milliseconds:
-                                            (index * 50).clamp(0, 600)),
+                                        milliseconds: index * 50),
                                   )
                                   .slideY(
                                     begin: 0.1,
                                     end: 0,
                                     duration: 300.ms,
                                     delay: Duration(
-                                        milliseconds:
-                                            (index * 50).clamp(0, 600)),
+                                        milliseconds: index * 50),
                                   );
                             },
                           ),

@@ -1,118 +1,67 @@
 # FX Câmbio
 
-Desafio técnico Flutter desenvolvido para a **Lifetime**. Aplicativo que consome a API pública PTAX do Banco Central do Brasil para exibir cotações de moedas estrangeiras em relação ao Real.
+Desafio técnico Flutter para a **Lifetime**. App que consome a API pública PTAX do Banco Central para exibir cotações de moedas estrangeiras em relação ao Real.
 
 ## Como executar
 
-### Pré-requisitos
-
-- Flutter SDK >= 3.10.4
-
-> O projeto já inclui as configurações do Firebase (Authentication com Email/Password). Basta clonar e rodar.
-
-### Passos
+Precisa do Flutter SDK >= 3.10.4. O Firebase já está configurado, é só clonar e rodar.
 
 ```bash
-# 1. Clonar o repositório
 git clone https://github.com/rickhbr/lifetime_teste.git
 cd lifetime_teste
-
-# 2. Instalar dependências
 flutter pub get
-
-# 3. Gerar código (modelos JSON + injeção de dependência)
 dart run build_runner build --delete-conflicting-outputs
-
-# 4. Executar
 flutter run
 ```
 
-### Credenciais de teste
+Login de teste: `teste@teste.com` / `123456`
 
-| Campo | Valor |
-|---|---|
-| E-mail | `teste@teste.com` |
-| Senha | `123456` |
+## Arquitetura
 
-## Decisões técnicas
-
-### Arquitetura
-
-O projeto segue **Clean Architecture** com separação em três camadas por feature:
+Clean Architecture com separação por feature. Cada feature tem `data/`, `domain/` e `presentation/`:
 
 ```
 lib/
-├── core/                  # Tema, widgets, rotas, rede, constantes, erros, use cases
+├── core/                  # Tema, widgets, rotas, rede, erros
 ├── features/
-│   ├── auth/              # Login (Firebase Auth)
+│   ├── auth/              # Login com Firebase Auth
 │   ├── currencies/        # Listagem de moedas
 │   └── currency_detail/   # Cotação detalhada
-└── injection.dart         # Configuração do service locator
+└── injection.dart
 ```
 
-Cada feature possui as camadas `data/`, `domain/` e `presentation/`, isolando responsabilidades e facilitando manutenção e testes.
+Os cubits dependem dos use cases (e não das implementações de repositório), o que facilita bastante na hora de testar e trocar implementações.
 
-- **Domain**: entidades, contratos de repositório e use cases
-- **Data**: models, datasources e implementações de repositório
-- **Presentation**: cubits, states, pages e widgets
+Estado gerenciado com **Cubit** e **sealed classes** do Dart 3, que dá um pattern matching bem limpo nos widgets.
 
-### SOLID
+Navegação com `GoRouter` — tem um refresh stream que escuta o `AuthCubit` e redireciona entre login e home automaticamente.
 
-- **SRP**: cada use case encapsula uma única regra de negócio (`SignInUseCase`, `GetCurrenciesUseCase`, `GetLatestQuoteUseCase`, etc.)
-- **OCP/DIP**: cubits dependem de abstrações (use cases e interfaces de repositório), não de implementações concretas
-- **ISP**: interfaces de repositório são focadas por feature, sem métodos desnecessários
+## API PTAX
 
-### Pacotes utilizados
+Consumo via `Dio` com dois endpoints:
 
-| Pacote | Finalidade |
-|---|---|
-| `flutter_bloc` | Gerenciamento de estado com Cubit |
-| `equatable` | Comparação de estados sem boilerplate |
-| `firebase_auth` / `firebase_core` | Autenticação por e-mail/senha |
-| `get_it` + `injectable` | Injeção de dependência com geração de código |
-| `dio` | Cliente HTTP para consumo da API PTAX |
-| `go_router` | Navegação declarativa com redirect baseado em auth |
-| `json_annotation` + `json_serializable` | Serialização de modelos JSON |
-| `intl` | Formatação de moeda (pt_BR) e datas |
-| `shimmer` | Skeleton loading durante carregamento |
-| `flutter_animate` | Animações declarativas (fade-in, slide) |
-| `url_launcher` | Abertura de links externos |
+- `/Moedas` — lista de moedas disponíveis
+- `/CotacaoMoedaDia` — cotação do dia pra uma moeda específica
 
-### Gerenciamento de estado
+Erros de rede e respostas vazias são tratados com exceções customizadas que viram `Failure` no domínio.
 
-**Cubit** (do `flutter_bloc`) com **sealed classes** para representar estados de forma exaustiva via pattern matching do Dart 3. Cada feature tem seu Cubit independente com estados explícitos: loading, erro, sucesso e sem dados.
+Base URL: `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/`
+[Documentação Swagger](https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/swagger-ui3#/)
 
-### Navegação
+## UI
 
-`GoRouter` com redirect reativo: um `GoRouterRefreshStream` escuta o `AuthCubit` e redireciona automaticamente entre `/login` e `/currencies` conforme o estado de autenticação.
+- Tema dark com Material 3
+- Shimmer loading nos estados de carregamento
+- Busca com debounce
+- Bandeiras via Unicode (sem lib extra)
+- Animações de entrada nas listas e cards
+- `SliverAppBar` com gradiente no detalhe
+- Cards de compra/venda com verde/vermelho
 
-### Consumo da API
+## Testes
 
-A API PTAX é consumida via `Dio` com dois endpoints:
+21 testes cobrindo use cases (delegação ao repositório), cubits (emissão de estados pra sucesso, erro e exceções) e um smoke test de widget. Mocks com `mocktail` e testes de bloc com `bloc_test`.
 
-- **`/Moedas`** — lista de moedas disponíveis
-- **`/CotacaoMoedaDia`** — cotação do dia para uma moeda específica
-
-Erros de rede e respostas sem dados são tratados com tipos de exceção customizados (`ServerException`, `NoDataException`) mapeados para `Failure` no domínio. Um `LoggingInterceptor` registra todas as requisições e respostas no console para debug.
-
-### Tratamento de estados
-
-- **Loading**: shimmer/skeleton loading ao invés de spinner genérico
-- **Erro**: widget de erro com mensagem e botão de retry
-- **Sem dados**: tela dedicada informando que não há cotação disponível (fins de semana/feriados)
-- **Sucesso**: exibição dos dados com animações de entrada
-
-### UI/UX
-
-- Tema dark com Material 3 e paleta de cores customizada
-- Campo de busca com debounce de 300ms
-- Bandeiras de países via Unicode (sem dependência externa)
-- Animações staggered nas listas e cards
-- Haptic feedback em interações chave
-- `SliverAppBar` com gradiente na tela de detalhe
-- Cards de compra/venda com cores semânticas (verde/vermelho)
-
-## API
-
-- **Base URL:** `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/`
-- **Documentação:** [Swagger PTAX](https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/swagger-ui3#/)
+```bash
+flutter test
+```

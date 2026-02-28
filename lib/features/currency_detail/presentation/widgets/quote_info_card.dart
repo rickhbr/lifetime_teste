@@ -24,6 +24,11 @@ class QuoteInfoCard extends StatelessWidget {
     final numberFormat = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm', 'pt_BR');
     final spread = quote.sellRate - quote.buyRate;
+    final spreadFormat = NumberFormat.currency(
+      locale: 'pt_BR',
+      symbol: 'R\$',
+      decimalDigits: 4,
+    );
     final symbol = CurrencyUtils.symbolForCurrency(currencyCode);
     final midRate = (quote.buyRate + quote.sellRate) / 2;
 
@@ -166,7 +171,7 @@ class QuoteInfoCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   Text(
-                    numberFormat.format(spread),
+                    spreadFormat.format(spread),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppTheme.gold,
